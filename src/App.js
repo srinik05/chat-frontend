@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 
 // Connect to backend port (3000)
-const socket = io("http://localhost:3000");
+//const socket = io("http://localhost:3000");
+const socket = io("https://chat-backend-e2y1.onrender.com");
 
 function App() {
   const [message, setMessage] = useState("");
