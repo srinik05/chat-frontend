@@ -10,7 +10,7 @@ export default function LoginForm({ onLoginSuccess }) {
     e.preventDefault();
     try {
         //const res = await axios.post("http://localhost:3000/api/auth/login", {
-        const res = io("https://chat-backend-e2y1.onrender.com/api/auth/login", {
+        const res = await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/login", {
         loginId,
         password,
       });
