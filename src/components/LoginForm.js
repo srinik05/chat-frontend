@@ -9,11 +9,10 @@ export default function LoginForm({ onLoginSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        //const res = await axios.post("http://localhost:3000/api/auth/login", {
-        const res = await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/login", {
-        loginId,
-        password,
-      });
+      const res = await axios.post(
+        "https://chat-backend-e2y1.onrender.com/api/auth/login",
+        { loginId, password }
+      );
       setMessage(res.data.message);
       onLoginSuccess(res.data.user); // pass user data
     } catch (err) {
@@ -23,7 +22,7 @@ export default function LoginForm({ onLoginSuccess }) {
 
   return (
     <div>
-      {/* 🔹 Fixed Banner at Top */}
+      {/* 🔹 Fixed Banner */}
       <div
         style={{
           position: "fixed",
@@ -42,7 +41,7 @@ export default function LoginForm({ onLoginSuccess }) {
         PalZone
       </div>
 
-      {/* 🔹 Login Form Container */}
+      {/* 🔹 Login Form */}
       <div
         style={{
           marginTop: "8rem",
@@ -107,11 +106,15 @@ export default function LoginForm({ onLoginSuccess }) {
           >
             Login
           </button>
-          
         </form>
 
         {message && (
-          <p style={{ marginTop: "1rem", color: message.includes("failed") ? "red" : "green" }}>
+          <p
+            style={{
+              marginTop: "1rem",
+              color: message.includes("failed") ? "red" : "green",
+            }}
+          >
             {message}
           </p>
         )}
