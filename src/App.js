@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import HomePage from "./components/HomePage";   // updated import
+import HomePage from "./components/HomePage";
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import ChatWindow from "./components/ChatWindow";

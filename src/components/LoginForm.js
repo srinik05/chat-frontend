@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Box, Button, Input, VStack, Heading, Text, Center } from "@chakra-ui/react";
 
 export default function LoginForm({ onLoginSuccess }) {
   const [loginId, setLoginId] = useState("");
@@ -9,116 +10,44 @@ export default function LoginForm({ onLoginSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "https://chat-backend-e2y1.onrender.com/api/auth/login",
-        { loginId, password }
-      );
+      const res = await axios.post("http://localhost:3000/api/auth/login", { loginId, password });
+      //const res = await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/login", { loginId, password });
       setMessage(res.data.message);
-      onLoginSuccess(res.data.user); // pass user data
+      onLoginSuccess(res.data.user);
     } catch (err) {
       setMessage(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div>
-      {/* 🔹 Fixed Banner */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          width: "100%",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          textAlign: "center",
-          padding: "1rem",
-          fontSize: "1.5rem",
-          fontWeight: "bold",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-          zIndex: 1000,
-        }}
-      >
+    <Box minH="100vh" bg="gray.50">
+      <Center bg="green.500" color="white" py={6} fontSize="2xl" fontWeight="bold">
         PalZone
-      </div>
+      </Center>
 
-      {/* 🔹 Login Form */}
-      <div
-        style={{
-          marginTop: "8rem",
-          maxWidth: "400px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          padding: "2rem",
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-          textAlign: "center",
-        }}
-      >
-        <h2 style={{ marginBottom: "1rem", color: "#333" }}>Login</h2>
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "1rem" }}>
-            <input
-              type="text"
-              placeholder="Username / Email / Phone"
-              value={loginId}
-              onChange={(e) => setLoginId(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "1rem" }}>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            style={{
-              width: "107%",
-              cursor: "pointer",
-              padding: "12px",
-              borderRadius: "5px",
-              border: "none",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              fontSize: "18px",
-            }}
-          >
+      <Center mt={10}>
+        <Box bg="white" p={10} rounded="lg" shadow="lg" w={["90%", "400px"]}>
+          <Heading mb={6} textAlign="center" size="lg">
             Login
-          </button>
-        </form>
+          </Heading>
 
-        {message && (
-          <p
-            style={{
-              marginTop: "1rem",
-              color: message.includes("failed") ? "red" : "green",
-            }}
-          >
-            {message}
-          </p>
-        )}
-      </div>
-    </div>
+          {message && (
+            <Text mb={4} color={message.includes("failed") ? "red.500" : "green.500"} textAlign="center">
+              {message}
+            </Text>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <VStack spacing={4}>
+              <Input type="text" placeholder="Username / Email / Phone" value={loginId} onChange={(e) => setLoginId(e.target.value)} isRequired />
+              <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} isRequired />
+              <Button type="submit" colorScheme="green" w="full">
+                Login
+              </Button>
+            </VStack>
+          </form>
+        </Box>
+      </Center>
+    </Box>
   );
 }

@@ -1,24 +1,38 @@
 import React from "react";
+import { Box, Heading, Text, Button, VStack } from "@chakra-ui/react";
 
 export default function Home({ onSelect }) {
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h1>Welcome to PalZone 💬</h1>
-      <p>Select an option to continue:</p>
-      <div style={{ marginTop: "20px" }}>
-        <button
+    <Box
+      textAlign="center"
+      mt="100px"
+      px="4"
+    >
+      <Heading mb="4" fontSize="4xl">
+        Welcome to PalZone 💬
+      </Heading>
+      <Text mb="8" fontSize="lg">
+        Select an option to continue:
+      </Text>
+
+      <VStack spacing={4}>
+        <Button
+          colorScheme="green"
+          size="lg"
           onClick={() => onSelect("login")}
-          style={{ padding: "0.5rem 1rem", marginRight: "10px" }}
+          width={{ base: "100%", sm: "200px" }}
         >
           Login
-        </button>
-        <button
+        </Button>
+        <Button
+          colorScheme="blue"
+          size="lg"
           onClick={() => onSelect("register")}
-          style={{ padding: "0.5rem 1rem" }}
+          width={{ base: "100%", sm: "200px" }}
         >
           Register
-        </button>
-      </div>
-    </div>
+        </Button>
+      </VStack>
+    </Box>
   );
 }
