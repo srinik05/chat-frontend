@@ -1,131 +1,189 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Box, Flex, VStack, HStack, Input, Button, Text } from "@chakra-ui/react";
 import { io } from "socket.io-client";
-import { Box, Button, Input, VStack, HStack, Text, Heading, Flex, Spacer, Center } from "@chakra-ui/react";
+import axios from "axios";
 
+// Connect to backend
 const socket = io("http://localhost:3000");
-//const socket = io("https://chat-backend-e2y1.onrender.com");
 
 export default function ChatWindow({ username }) {
-  const [currentRoom, setCurrentRoom] = useState("room1");
-  const [rooms] = useState(["room1"]);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [allMessages, setAllMessages] = useState({}); // store messages per user
+
   const messagesEndRef = useRef(null);
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [allMessages, selectedUser]);
+
+  // Fetch users from backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/api/auth/users");
+        setUsers(res.data.filter((u) => u.username !== username));
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+    fetchUsers();
+  }, [username]);
+
+  // Socket listener for messages
   useEffect(() => {
     if (!username) return;
 
-    socket.emit("set username", { username, room: currentRoom });
+    socket.emit("set username", { username });
 
-    socket.on("chat message", (msg) => setMessages((prev) => [...prev, msg]));
-    socket.on("user joined", (msg) =>
-      setMessages((prev) => [...prev, { systemMessage: msg.systemMessage, username: msg.username, time: msg.time }])
-    );
-    socket.on("user left", (msg) =>
-      setMessages((prev) => [...prev, { systemMessage: msg.systemMessage, username: msg.username, time: msg.time }])
-    );
+    const handleMessage = (msg) => {
+      const isSelf = msg.from === username;  // ensure self messages are detected
+      const chatUser = isSelf ? msg.to : msg.from;
+
+      const formattedMsg = { ...msg, self: isSelf };
+
+      setAllMessages(prev => {
+        const userMsgs = prev[chatUser] || [];
+        const exists = userMsgs.some(
+          m => m.from === formattedMsg.from &&
+            m.to === formattedMsg.to &&
+            m.message === formattedMsg.message &&
+            m.time === formattedMsg.time
+        );
+        if (exists) return prev;
+
+        return {
+          ...prev,
+          [chatUser]: [...userMsgs, formattedMsg]
+        };
+      });
+    };
+
+
+    socket.on("chat message", handleMessage);
 
     return () => {
-      socket.off("chat message");
-      socket.off("user joined");
-      socket.off("user left");
+      socket.off("chat message", handleMessage);
     };
-  }, [username, currentRoom]);
+  }, [username]);
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (message.trim()) {
-      socket.emit("chat message", { username, room: currentRoom, message });
-      setMessage("");
-    }
+  // Select a user to chat
+  const handleSelectUser = (user) => {
+    setSelectedUser(user);
+    socket.emit("join chat", { fromUser: username, toUser: user });
   };
 
-  return (
-    <Flex direction="column" minH="100vh">
-      <Center bg="green.500" color="white" py={4} fontSize="2xl" fontWeight="bold">
-        PalZone
-      </Center>
+  // Send message
+  const handleSendMessage = () => {
+    if (!message || !selectedUser) return;
 
-      <Flex flex={1} mt={4}>
-        {/* Rooms Panel */}
-        <Box w="200px" p={4} borderRight="1px solid gray">
-          <Heading size="md" mb={4}>
-            Rooms
-          </Heading>
-          <VStack align="stretch" spacing={2}>
-            {rooms.map((room) => (
-              <Box
-                key={room}
-                p={2}
-                bg={currentRoom === room ? "green.100" : "gray.100"}
-                borderRadius="md"
-                cursor="pointer"
-                onClick={() => setCurrentRoom(room)}
-              >
-                {room}
-              </Box>
-            ))}
-          </VStack>
-        </Box>
+    const msgData = {
+      fromUser: username,
+      toUser: selectedUser,
+      message,
+      time: new Date().toLocaleTimeString()
+    };
+
+    // // Mark as self for local display
+    // const selfMsg = { ...msgData, from: username, to: selectedUser, self: true };
+
+    // // Update local chat immediately
+    // setAllMessages(prev => ({
+    //   ...prev,
+    //   [selectedUser]: [...(prev[selectedUser] || []), selfMsg],
+    // }));
+
+
+    socket.emit("chat message", msgData);
+    setMessage(""); // clear input
+  };
+
+  // Messages for the selected user
+  const messages = selectedUser ? allMessages[selectedUser] || [] : [];
+
+  return (
+    <Flex height="100vh" direction="column">
+      {/* Banner */}
+      <Box bg="green.400" p={4} color="white" fontWeight="bold" fontSize="xl" textAlign="center">
+        PalZone
+      </Box>
+
+      <Flex flex="1">
+        {/* Left Panel */}
+        <VStack w="200px" borderRight="1px solid #ccc" p={4} align="stretch" spacing={2}>
+          <Text fontWeight="bold">Users</Text>
+          {users.map((u) => (
+            <Box
+              key={u.username}
+              p={2}
+              bg={selectedUser === u.username ? "green.200" : "gray.100"}
+              borderRadius="md"
+              cursor="pointer"
+              onClick={() => handleSelectUser(u.username)}
+            >
+              {u.username}
+            </Box>
+          ))}
+        </VStack>
 
         {/* Chat Body */}
-        <Flex direction="column" flex={1} p={4}>
-          <Heading size="md" mb={2}>
-            Room: {currentRoom}
-          </Heading>
+        <Flex flex="1" direction="column" p={4}>
+          <Text fontWeight="bold" mb={2}>
+            Chat with: {selectedUser || "Select a user"}
+          </Text>
 
-          <Box flex={1} overflowY="auto" p={4} bg="gray.50" borderRadius="md" mb={2}>
-            {messages.map((msg, i) => {
-              const isCurrentUser = msg.username === username;
-              if (msg.systemMessage) {
-                return (
-                  <Text key={i} color="gray.500" textAlign="center" mb={2}>
-                    [{msg.time}] {msg.username} {msg.systemMessage}
-                  </Text>
-                );
-              }
-              return (
-                <Flex key={i} justify={isCurrentUser ? "flex-end" : "flex-start"} mb={2}>
-                  <Box
-                    bg={isCurrentUser ? "green.500" : "gray.300"}
-                    color={isCurrentUser ? "white" : "black"}
-                    p={2}
-                    borderRadius="md"
-                    maxW="60%"
-                    wordBreak="break-word"
+          <Box flex="1" border="1px solid #b45151ff" borderRadius="md" p={4} overflowY="auto" backgroundColor="gray.600">
+            {messages.map((msg, idx) => (
+              <Flex
+                key={idx}
+                justify={msg.from === username ? "flex-end" : "flex-start"} // 👈 aligns right or left
+                mb={3}
+              >
+                <Box
+                  bg={msg.from === username ? "#DCF8C6" : "#FFFFFF"} // WhatsApp-style colors
+                  color="black"
+                  px={4}
+                  py={2}
+                  borderRadius={
+                    msg.from === username
+                      ? "20px 20px 0 20px" // right-side bubble shape
+                      : "20px 20px 20px 0" // left-side bubble shape
+                  }
+                  maxW="60%"
+                  boxShadow="0 1px 2px rgba(0,0,0,0.2)"
+                >
+                  <Text fontSize="md">{msg.message}</Text>
+                  <Text
+                    fontSize="xs"
+                    color="gray.500"
+                    textAlign="right"
+                    mt={1}
                   >
-                    {!isCurrentUser && (
-                      <Text fontSize="xs" fontWeight="bold">
-                        {msg.username}
-                      </Text>
-                    )}
-                    {msg.message}
-                    <Text fontSize="xs" textAlign="right" opacity={0.7}>
-                      {msg.time}
-                    </Text>
-                  </Box>
-                </Flex>
-              );
-            })}
+                    {msg.time}
+                  </Text>
+                </Box>
+              </Flex>
+            ))}
             <div ref={messagesEndRef} />
           </Box>
 
-          <form onSubmit={handleSendMessage}>
-            <HStack spacing={2}>
-              <Input
-                placeholder="Type a message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <Button colorScheme="green" type="submit">
-                Send
-              </Button>
-            </HStack>
-          </form>
+          {/* Input */}
+          <HStack mt={2}>
+            <Input
+              placeholder="Type a message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              disabled={!selectedUser}
+            />
+            <Button colorScheme="green" onClick={handleSendMessage} disabled={!selectedUser}>
+              Send
+            </Button>
+          </HStack>
         </Flex>
       </Flex>
     </Flex>

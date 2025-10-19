@@ -19,6 +19,7 @@ export default function RegisterForm({ onRegistered }) {
     phone: "",
     password: "",
     confirmPassword: "",
+    role: "user" // ✅ default role for normal users
   });
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -30,13 +31,17 @@ export default function RegisterForm({ onRegistered }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       setErrorMsg("Passwords do not match");
       return;
     }
+
     try {
-      await axios.post("http://localhost:3000/api/auth/register", formData);
-      //await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/register", formData);
+      await axios.post("http://localhost:3000/api/auth/register", formData, {
+        headers: { "Content-Type": "application/json" }
+      });
+
       setSuccessMsg("Successfully registered! Please proceed to Login.");
       setErrorMsg("");
       setIsRegistered(true);
@@ -85,7 +90,7 @@ export default function RegisterForm({ onRegistered }) {
                 <Input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} isRequired />
                 <Input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} isRequired />
                 <Input name="username" placeholder="Username" value={formData.username} onChange={handleChange} isRequired />
-                <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} isRequired />
+                <Input name="email" placeholder="Email" type="email" value={formData.email} onChange={handleChange} isRequired />
                 <Input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} isRequired />
                 <Input name="password" type="password" placeholder="Password" value={formData.password} onChange={handleChange} isRequired />
                 <Input name="confirmPassword" type="password" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} isRequired />
