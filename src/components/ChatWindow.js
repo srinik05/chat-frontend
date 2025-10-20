@@ -15,14 +15,16 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import { io } from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:3000");
+//const socket = io("http://localhost:3000");
+const socket = io("https://chat-backend-e2y1.onrender.com");
 
 export default function ChatWindow({ username }) {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [message, setMessage] = useState("");
   const [allMessages, setAllMessages] = useState({});
-  const [isOnline, setIsOnline] = useState(true); // dummy status for now
+  //const [isOnline, setIsOnline] = useState(true); // dummy status for now
+  const [isOnline] = useState(true); // dummy status for now
 
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -37,7 +39,8 @@ export default function ChatWindow({ username }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/auth/users");
+        //const res = await axios.get("http://localhost:3000/api/auth/users");
+        const res = await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/users");
         setUsers(res.data.filter((u) => u.username !== username));
       } catch (err) {
         console.error("Error fetching users:", err);

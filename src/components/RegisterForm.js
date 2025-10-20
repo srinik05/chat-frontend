@@ -38,7 +38,8 @@ export default function RegisterForm({ onRegistered }) {
     }
 
     try {
-      await axios.post("http://localhost:3000/api/auth/register", formData, {
+      //await axios.post("http://localhost:3000/api/auth/register", formData, {
+      await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/register", formData, {
         headers: { "Content-Type": "application/json" }
       });
 
