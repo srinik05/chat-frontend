@@ -40,7 +40,7 @@ export default function ChatWindow({ username }) {
     const fetchUsers = async () => {
       try {
         //const res = await axios.get("http://localhost:3000/api/auth/users");
-        const res = await axios.post("https://chat-backend-e2y1.onrender.com/api/auth/users");
+        const res = await axios.get("https://chat-backend-e2y1.onrender.com/api/auth/users");
         setUsers(res.data.filter((u) => u.username !== username));
       } catch (err) {
         console.error("Error fetching users:", err);
