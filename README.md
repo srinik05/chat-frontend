@@ -1,70 +1,86 @@
-# Getting Started with Create React App
+# Chatting App Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend application for the Chatting App, built with **React**, **Capacitor**, and **Socket.io-client**. It supports chat and voice calls on **web** and **mobile**.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- User registration and login
+- Real-time chat messaging
+- Voice calls using WebRTC and Socket.io signaling
+- Mobile-ready using Capacitor
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js >= 18
+- npm >= 9
+- Android Studio (for Android build)
+- Xcode (for iOS build, Mac only)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Setup
 
-### `npm test`
+1. Clone the repository:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone <your-frontend-repo-url>
+cd chat-frontend
 
-### `npm run build`
+Install dependencies:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Add environment variables:
 
-### `npm run eject`
+Create .env in root:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+REACT_APP_API_URL=http://localhost:3000
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Run the app (development):
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+npm start
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Add Android/iOS platform (Capacitor):
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+npx cap add android
+npx cap add ios
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Open in IDE:
 
-### Analyzing the Bundle Size
+npx cap open android
+npx cap open ios
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+Build for Android/iOS:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+npm run build
+npx cap copy
+npx cap sync
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+APK location: android/app/build/outputs/apk/debug/app-debug.apk
 
-### Deployment
+Folder Structure
+chat-frontend/
+├── public/          # Public assets
+├── src/
+│   ├── components/  # Reusable UI components
+│   ├── pages/       # App pages/screens
+│   ├── services/    # API and Socket.io services
+│   ├── App.js
+│   └── index.js
+├── android/         # Capacitor Android project
+├── ios/             # Capacitor iOS project
+├── package.json
+└── capacitor.config.json
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+License
 
-### `npm run build` fails to minify
+MIT License
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+If you want, I can also **add a “Voice Call Implementation Guide” section** in both READMEs so anyone cloning your repo knows **exactly how to test chat + voice calls** end-to-end.  
+
+Do you want me to do that next?
