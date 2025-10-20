@@ -77,10 +77,4 @@ chat-frontend/
 └── capacitor.config.json
 
 License
-
-MIT License
----
-
-If you want, I can also **add a “Voice Call Implementation Guide” section** in both READMEs so anyone cloning your repo knows **exactly how to test chat + voice calls** end-to-end.  
-
-Do you want me to do that next?
+com.palzone.com
